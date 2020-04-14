@@ -1,0 +1,9 @@
+server = "Sample Server Name"
+
+[watcher]
+ip = "127.0.0.1"
+port = "9000"
+
+[monitor]
+# Add interval in seconds
+interval = "1"
