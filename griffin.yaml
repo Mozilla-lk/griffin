@@ -1,0 +1,26 @@
+# Sample griffin file
+
+backends:
+  - name: Foo Web Service
+    host: foo.example.com
+    health:
+      - method: http
+        endpoint: /status
+        port: 4040
+        interval: 10
+      - method: ping
+        interval: 5
+  - name: Bar Web Service
+    host: bar.example.com
+    health:
+      - method: http
+        endpoint: /statuz
+        interval: 15
+      - method: ping
+        interval: 10
+alerts:
+  - type: Email
+    from: griffin@foo.com
+    to: webmaster@foo.com
+  - type: Webhook
+    url: https://mywebhook.com/abcd13345
