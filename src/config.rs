@@ -2,19 +2,19 @@ use serde::Deserialize;
 use std::{error, fs, io::BufReader, path::Path};
 
 #[derive(Debug, Deserialize)]
-#[serde(untagged)]
-pub enum HealthCheckKind {
-    Http { method: String, endpoint: String },
-    Ping { method: String },
+pub enum HealthCheckMethod {
+    #[serde(rename = "http")]
+    Http,
+    #[serde(rename = "ping")]
+    Ping,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct HealthCheck {
-    #[serde(flatten)]
-    pub kind: HealthCheckKind,
-    pub interval: String,
-    #[serde(default = "default_port")]
-    pub port: u32,
+    pub method: HealthCheckMethod,
+    pub endpoint: Option<String>,
+    pub interval: Option<String>,
+    pub port: Option<u32>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -22,10 +22,6 @@ pub struct Backend {
     pub name: String,
     pub host: String,
     pub health: Vec<HealthCheck>,
-}
-
-fn default_port() -> u32 {
-    80
 }
 
 #[derive(Debug, Deserialize)]
