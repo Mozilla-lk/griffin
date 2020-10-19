@@ -97,7 +97,8 @@ pub struct Config {
 }
 
 lazy_static! {
-    static ref RE: Regex = RegexBuilder::new(r"(\d+)(h|min|s|ms)")
+    /// Regex expression to match time durations in string format
+    static ref RE: Regex = RegexBuilder::new(r"^(\d+)(h|min|s|ms)$")
         .case_insensitive(true)
         .build()
         .unwrap();
