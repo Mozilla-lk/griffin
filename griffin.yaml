@@ -7,17 +7,17 @@ backends:
       - method: http
         endpoint: /status
         port: 4040
-        interval: 10
+        interval: 10h
       - method: ping
-        interval: 5
+        interval: 5min
   - name: Bar Web Service
     host: bar.example.com
     health:
       - method: http
         endpoint: /statuz
-        interval: 15
+        interval: 15s
       - method: ping
-        interval: 10
+        interval: 30ms
 alerts:
   - type: Email
     from: griffin@foo.com
