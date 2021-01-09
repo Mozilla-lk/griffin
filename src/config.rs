@@ -77,6 +77,7 @@ pub enum HealthCheckMethod {
 pub struct HealthCheck {
     pub method: HealthCheckMethod,
     pub endpoint: Option<String>,
+    #[serde(default)]
     #[serde(deserialize_with = "interval_from_str")]
     pub interval: Interval,
     pub port: Option<u32>,
