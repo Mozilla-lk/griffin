@@ -1,7 +1,13 @@
 use regex::{Regex, RegexBuilder};
 use serde::{de::Error, Deserialize, Deserializer};
-use std::fmt;
-use std::{error, fmt::Display, fs, io::BufReader, path::Path, str::FromStr};
+use std::{
+    error,
+    fmt::{self, Display},
+    fs,
+    io::{BufReader, Read},
+    path::Path,
+    str::FromStr,
+};
 
 #[derive(Debug)]
 /// TimeUnit represents time duration's unit in hours, minutes, seconds, milliseconds
@@ -130,10 +136,15 @@ where
 
 impl Config {
     /// creates a new config from a file
-    pub fn new<P: AsRef<Path>>(path: P) -> Result<Self, Box<dyn error::Error>> {
+    pub fn new_from_file<P: AsRef<Path>>(path: P) -> Result<Self, Box<dyn error::Error>> {
         let file = fs::File::open(path)?;
         let reader = BufReader::new(file);
-        let config: Config = serde_yaml::from_reader(reader).unwrap();
+        Self::new(reader)
+    }
+
+    /// creates a new config from a reader
+    pub fn new<R: Read>(rdr: R) -> Result<Self, Box<dyn error::Error>> {
+        let config: Config = serde_yaml::from_reader(rdr).unwrap();
         Ok(config)
     }
 }
