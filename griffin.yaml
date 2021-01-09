@@ -7,9 +7,8 @@ backends:
       - method: http
         endpoint: /status
         port: 4040
-        interval: 10h
+        interval: 1h
       - method: ping
-        interval: 5min
   - name: Bar Web Service
     host: bar.example.com
     health:
