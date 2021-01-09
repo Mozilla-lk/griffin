@@ -1,5 +1,4 @@
 # Griffin - Server monitoring written with Rust language
-[![Build Status](https://travis-ci.org/Mozilla-lk/griffin.svg?branch=master)](https://travis-ci.org/Mozilla-lk/griffin)
 [![License](https://img.shields.io/github/license/mozilla-lk/griffin)]()
 ![Build](https://github.com/Mozilla-lk/griffin/workflows/Rust/badge.svg)
 
