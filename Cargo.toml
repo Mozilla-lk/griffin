@@ -1,16 +1,19 @@
 [package]
 name = "griffin"
 version = "0.1.0"
+description = "Healthcheck tool written with rust"
 authors = [
     "Lahiru Himesh <lahiru.lahirumadusanka@gmail.com>", 
     "Kasun Vithanage <alankasun@gmail.com>"
 ]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
 regex = "1"
 lazy_static = "1.4.0"
+clap = "2.33.3"
+log = "0.4"
+env_logger = "0.8.3"
+
