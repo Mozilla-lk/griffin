@@ -1,6 +1,6 @@
 # Sample griffin file
 
-backends:
+services:
   - name: Foo Web Service
     host: foo.example.com
     health:
