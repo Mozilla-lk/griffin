@@ -1,7 +1,6 @@
 use regex::{Regex, RegexBuilder};
 use serde::{de::Error, Deserialize, Deserializer};
 use std::{
-    error,
     fmt::{self, Display},
     fs,
     io::{BufReader, Read},
@@ -9,7 +8,7 @@ use std::{
     str::FromStr,
 };
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 /// TimeUnit represents time duration's unit in hours, minutes, seconds, milliseconds
 pub enum TimeUnit {
     Hours,
@@ -45,7 +44,7 @@ impl FromStr for TimeUnit {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 /// Represents a time interval with a value and an unit
 pub struct Interval {
     pub value: u32,
@@ -103,6 +102,24 @@ pub struct Config {
     pub backends: Vec<Backend>,
 }
 
+#[derive(Debug)]
+pub enum ConfigError {
+    Io(std::io::Error),
+    Serde(serde_yaml::Error),
+}
+
+impl From<serde_yaml::Error> for ConfigError {
+    fn from(v: serde_yaml::Error) -> Self {
+        ConfigError::Serde(v)
+    }
+}
+
+impl From<std::io::Error> for ConfigError {
+    fn from(v: std::io::Error) -> Self {
+        ConfigError::Io(v)
+    }
+}
+
 lazy_static! {
     /// Regex expression to match time durations in string format
     static ref RE: Regex = RegexBuilder::new(r"^(\d+)(h|min|s|ms)$")
@@ -136,15 +153,56 @@ where
 
 impl Config {
     /// creates a new config from a file
-    pub fn new_from_file<P: AsRef<Path>>(path: P) -> Result<Self, Box<dyn error::Error>> {
+    pub fn new_from_file<P: AsRef<Path>>(path: P) -> Result<Self, ConfigError> {
         let file = fs::File::open(path)?;
         let reader = BufReader::new(file);
         Self::new(reader)
     }
 
     /// creates a new config from a reader
-    pub fn new<R: Read>(rdr: R) -> Result<Self, Box<dyn error::Error>> {
-        let config: Config = serde_yaml::from_reader(rdr).unwrap();
+    pub fn new<R: Read>(rdr: R) -> Result<Self, ConfigError> {
+        let config: Config = serde_yaml::from_reader(rdr)?;
         Ok(config)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    fn parse_correct_config() {
+        let config = r###"
+            backends:
+            - name: Foo Web Service
+              host: foo.example.com
+              health:
+                - method: http
+                  endpoint: /status
+                  port: 4040
+                  interval: 1h
+                - method: ping
+        "###;
+
+        if let Ok(conf) = Config::new(config.as_bytes()) {
+            assert_eq!(conf.backends.len(), 1);
+            assert_eq!(
+                conf.backends[0].health[0].interval,
+                Interval::new(1, TimeUnit::Hours)
+            );
+        }
+    }
+
+    #[test]
+    fn fail_on_invalid_config() {
+        let config = r###"
+            backends:
+        "###;
+
+        match Config::new(config.as_bytes()) {
+            Ok(_) => assert!(false),
+            Err(_) => assert!(true),
+        }
     }
 }
