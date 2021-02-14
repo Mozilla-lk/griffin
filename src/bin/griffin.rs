@@ -1,6 +1,5 @@
-use griffin::config::Config;
+use griffin::app;
 
 fn main() {
-    let c = Config::new_from_file("griffin.yaml").unwrap();
-    println!("{:?}", c);
+    app::run();
 }
