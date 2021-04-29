@@ -2,6 +2,7 @@
 [![License](https://img.shields.io/github/license/mozilla-lk/griffin)]()
 ![Build](https://github.com/Mozilla-lk/griffin/workflows/Rust/badge.svg)
 
+![Griffin Banner](logo_gh.png)
 
 Hi, I'm Griffin 👋  
 
