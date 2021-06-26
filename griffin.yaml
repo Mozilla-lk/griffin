@@ -8,15 +8,11 @@ services:
         endpoint: /status
         port: 4040
         interval: 1h
-      - method: ping
   - name: Bar Web Service
     host: bar.example.com
     health:
-      - method: http
-        endpoint: /statuz
-        interval: 15s
-      - method: ping
-        interval: 30ms
+      - endpoint: /statuz
+        interval: 2min
 alerts:
   - type: Email
     from: griffin@foo.com

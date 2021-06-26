@@ -7,6 +7,7 @@ use crate::config::Config;
 
 pub fn run() {
     env_logger::builder()
+        .parse_env("GRIFFIN_LOG")
         .filter_level(log::LevelFilter::Info)
         .init();
 

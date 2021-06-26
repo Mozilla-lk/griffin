@@ -14,7 +14,6 @@ pub enum TimeUnit {
     Hours,
     Minutes,
     Seconds,
-    Milliseconds,
 }
 
 #[derive(Debug, Clone)]
@@ -35,7 +34,6 @@ impl FromStr for TimeUnit {
     /// Convert a string to TimeUnit
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_ref() {
-            "ms" => Ok(TimeUnit::Milliseconds),
             "s" => Ok(TimeUnit::Seconds),
             "min" => Ok(TimeUnit::Minutes),
             "h" => Ok(TimeUnit::Hours),
@@ -77,9 +75,16 @@ pub enum HealthCheckMethod {
     Ping,
 }
 
+impl Default for HealthCheckMethod {
+    fn default() -> Self {
+        HealthCheckMethod::Http
+    }
+}
+
 #[derive(Debug, Deserialize)]
 /// Health check details
 pub struct HealthCheck {
+    #[serde(default)]
     pub method: HealthCheckMethod,
     pub endpoint: Option<String>,
     #[serde(default)]
@@ -122,7 +127,7 @@ impl From<std::io::Error> for ConfigError {
 
 lazy_static! {
     /// Regex expression to match time durations in string format
-    static ref RE: Regex = RegexBuilder::new(r"^(\d+)(h|min|s|ms)$")
+    static ref RE: Regex = RegexBuilder::new(r"^(\d+)(h|min|s)$")
         .case_insensitive(true)
         .build()
         .unwrap();
@@ -140,7 +145,7 @@ where
                 Some(v) => v.as_str().parse::<u32>().unwrap(),
                 None => 0,
             };
-            if val == 0 {
+            if val <= 0 {
                 return Err(D::Error::custom("duration must be 0 or greater"));
             }
             let dur = captures.get(2).map_or("", |m| m.as_str());
