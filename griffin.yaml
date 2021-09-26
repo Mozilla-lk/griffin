@@ -1,6 +1,7 @@
 # Sample griffin file
 
-services:
+# remote config
+remotes:
   - name: Foo Web Service
     host: foo.example.com
     health:
@@ -13,9 +14,11 @@ services:
     health:
       - endpoint: /statuz
         interval: 2min
+
+# globle alerts
 alerts:
   - type: Email
     from: griffin@foo.com
     to: webmaster@foo.com
   - type: Webhook
-    url: https://mywebhook.com/abcd13345
+    url: https://mywebsite.com/webhook
