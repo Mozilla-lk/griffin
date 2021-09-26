@@ -95,7 +95,7 @@ pub struct HealthCheck {
 
 #[derive(Debug, Deserialize)]
 /// Assigned backend
-pub struct Service {
+pub struct Remote {
     pub name: String,
     pub host: String,
     pub health: Vec<HealthCheck>,
@@ -104,7 +104,7 @@ pub struct Service {
 #[derive(Debug, Deserialize)]
 /// Configuration
 pub struct Config {
-    pub services: Vec<Service>,
+    pub remotes: Vec<Remote>,
 }
 
 #[derive(Debug)]
@@ -191,9 +191,9 @@ mod tests {
         "###;
 
         if let Ok(conf) = Config::new(config.as_bytes()) {
-            assert_eq!(conf.services.len(), 1);
+            assert_eq!(conf.remotes.len(), 1);
             assert_eq!(
-                conf.services[0].health[0].interval,
+                conf.remotes[0].health[0].interval,
                 Interval::new(1, TimeUnit::Hours)
             );
         }
