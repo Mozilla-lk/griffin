@@ -8,7 +8,7 @@ use std::{
     str::FromStr,
 };
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 /// TimeUnit represents time duration's unit in hours, minutes, seconds, milliseconds
 pub enum TimeUnit {
     Hours,
@@ -42,8 +42,8 @@ impl FromStr for TimeUnit {
     }
 }
 
-#[derive(Debug, PartialEq)]
 /// Represents a time interval with a value and an unit
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Interval {
     pub value: u32,
     pub unit: TimeUnit,
@@ -53,6 +53,16 @@ impl Interval {
     /// Creates a new Interval from a value and TimeUnit
     pub fn new(value: u32, unit: TimeUnit) -> Self {
         Self { value, unit }
+    }
+}
+
+impl From<Interval> for clokwerk::Interval {
+    fn from(interval: Interval) -> Self {
+        match interval.unit {
+            TimeUnit::Hours => clokwerk::Interval::Hours(interval.value),
+            TimeUnit::Minutes => clokwerk::Interval::Minutes(interval.value),
+            TimeUnit::Seconds => clokwerk::Interval::Seconds(interval.value),
+        }
     }
 }
 
@@ -66,8 +76,8 @@ impl Default for Interval {
     }
 }
 
-#[derive(Debug, Deserialize)]
 /// Health check method used
+#[derive(Debug, Deserialize, Clone, Copy)]
 pub enum HealthCheckMethod {
     #[serde(rename = "http")]
     Http,
@@ -81,24 +91,20 @@ impl Default for HealthCheckMethod {
     }
 }
 
-#[derive(Debug, Deserialize)]
 /// Health check details
+#[derive(Clone, Debug, Deserialize)]
 pub struct HealthCheck {
-    #[serde(default)]
-    pub method: HealthCheckMethod,
-    pub endpoint: Option<String>,
     #[serde(default)]
     #[serde(deserialize_with = "interval_from_str")]
     pub interval: Interval,
-    pub port: Option<u32>,
 }
 
-#[derive(Debug, Deserialize)]
 /// Assigned backend
+#[derive(Debug, Deserialize, Clone)]
 pub struct Remote {
-    pub name: String,
-    pub host: String,
-    pub health: Vec<HealthCheck>,
+    pub name: Option<String>,
+    pub url: String,
+    pub health: Option<HealthCheck>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -179,23 +185,26 @@ mod tests {
     #[test]
     fn parse_correct_config() {
         let config = r###"
-            backends:
-            - name: Foo Web Service
-              host: foo.example.com
-              health:
-                - method: http
-                  endpoint: /status
-                  port: 4040
-                  interval: 1h
-                - method: ping
+            remotes:
+              - name: Foo Bar
+                url: https://foo.bar
+                health:
+                  interval: 5min
         "###;
 
-        if let Ok(conf) = Config::new(config.as_bytes()) {
-            assert_eq!(conf.remotes.len(), 1);
-            assert_eq!(
-                conf.remotes[0].health[0].interval,
-                Interval::new(1, TimeUnit::Hours)
-            );
+        match Config::new(config.as_bytes()) {
+            Ok(config) => {
+                assert_eq!(config.remotes.len(), 1);
+                match &config.remotes[0].health {
+                    None => assert!(false, "Health wasnt found"),
+                    Some(health) => {
+                        assert_eq!(health.interval, Interval::new(5, TimeUnit::Minutes))
+                    }
+                }
+            }
+            Err(e) => {
+                assert!(false, "Error parsing config {:?}", e);
+            }
         }
     }
 
