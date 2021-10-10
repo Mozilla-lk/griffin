@@ -195,12 +195,14 @@ mod tests {
         match Config::new(config.as_bytes()) {
             Ok(config) => {
                 assert_eq!(config.remotes.len(), 1);
-                match &config.remotes[0].health {
-                    None => assert!(false, "Health wasnt found"),
-                    Some(health) => {
-                        assert_eq!(health.interval, Interval::new(5, TimeUnit::Minutes))
-                    }
-                }
+                let remote = &config.remotes[0];
+
+                assert_eq!(remote.name.as_deref(), Some("Foo Bar"));
+                assert_eq!(remote.url, "https://foo.bar");
+                assert_eq!(
+                    remote.health.as_ref().unwrap().interval,
+                    Interval::new(5, TimeUnit::Minutes)
+                );
             }
             Err(e) => {
                 assert!(false, "Error parsing config {:?}", e);
