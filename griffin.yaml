@@ -2,23 +2,19 @@
 
 # remote config
 remotes:
-  - name: Foo Web Service
-    host: foo.example.com
+  - name: FOSSLK Web Site
+    url: https://foss.lk
     health:
-      - method: http
-        endpoint: /status
-        port: 4040
-        interval: 1h
-  - name: Bar Web Service
-    host: bar.example.com
+      interval: 5min
+  - name: FOSSLK Blog Web Site
+    url: https://blog.foss.lk
     health:
-      - endpoint: /statuz
-        interval: 2min
+      interval: 1min
 
 # globle alerts
 alerts:
-  - type: Email
+  - type: email
     from: griffin@foo.com
     to: webmaster@foo.com
-  - type: Webhook
+  - type: webhook
     url: https://mywebsite.com/webhook
