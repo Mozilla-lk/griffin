@@ -5,9 +5,7 @@ use log::info;
 
 use crate::config::Config;
 
-// Scheduler, and trait for .seconds(), .minutes(), etc.
 use clokwerk::Scheduler;
-// Import week days and WeekDay
 
 use std::thread;
 use std::time::Duration;
@@ -39,6 +37,7 @@ pub fn run() {
 
     let mut scheduler = Scheduler::new();
 
+    // for now remote is only considering HTTP upstreams
     for remote in &config.remotes {
         // for h in &remote.health {
         //     let interval = h.interval;

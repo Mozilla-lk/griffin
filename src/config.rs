@@ -11,8 +11,11 @@ use std::{
 #[derive(Debug, PartialEq, Clone, Copy)]
 /// TimeUnit represents time duration's unit in hours, minutes, seconds, milliseconds
 pub enum TimeUnit {
+    /// Hours
     Hours,
+    /// Minutes
     Minutes,
+    /// Seconds
     Seconds,
 }
 
@@ -90,7 +93,7 @@ pub struct HealthCheckConfig {
 
 /// Upstream remote
 #[derive(Debug, Deserialize, Clone)]
-pub struct Remote {
+pub struct RemoteConfig {
     /// Name of the upstream
     pub name: Option<String>,
 
@@ -105,7 +108,7 @@ pub struct Remote {
 /// Configuration
 pub struct Config {
     /// remotes to check
-    pub remotes: Vec<Remote>,
+    pub remotes: Vec<RemoteConfig>,
 }
 
 #[derive(Debug)]
