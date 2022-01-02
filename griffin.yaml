@@ -13,8 +13,5 @@ remotes:
 
 # alerts
 alerts:
-  - type: email
-    from: griffin@foo.com
-    to: webmaster@foo.com
-  - type: webhook
-    url: https://mywebsite.com/webhook
+  - type: discord
+    webbook: DISCORD_WEBHOOK_URL_HERE
