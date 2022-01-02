@@ -11,7 +11,7 @@ remotes:
     health:
       interval: 1min
 
-# globle alerts
+# alerts
 alerts:
   - type: email
     from: griffin@foo.com

@@ -19,12 +19,13 @@ pub enum TimeUnit {
 #[derive(Debug, Clone)]
 /// Error when time unit is not valid
 pub struct TimeUnitError {
-    str: String,
+    /// error message
+    message: String,
 }
 
 impl Display for TimeUnitError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "invalid duration {}", self.str)
+        write!(f, "invalid duration {}", self.message)
     }
 }
 
@@ -37,7 +38,9 @@ impl FromStr for TimeUnit {
             "s" => Ok(TimeUnit::Seconds),
             "min" => Ok(TimeUnit::Minutes),
             "h" => Ok(TimeUnit::Hours),
-            _ => Err(TimeUnitError { str: s.to_owned() }),
+            _ => Err(TimeUnitError {
+                message: s.to_owned(),
+            }),
         }
     }
 }
@@ -76,40 +79,32 @@ impl Default for Interval {
     }
 }
 
-/// Health check method used
-#[derive(Debug, Deserialize, Clone, Copy)]
-pub enum HealthCheckMethod {
-    #[serde(rename = "http")]
-    Http,
-    #[serde(rename = "ping")]
-    Ping,
-}
-
-impl Default for HealthCheckMethod {
-    fn default() -> Self {
-        HealthCheckMethod::Http
-    }
-}
-
-/// Health check details
+/// Health check config
 #[derive(Clone, Debug, Deserialize)]
-pub struct HealthCheck {
+pub struct HealthCheckConfig {
     #[serde(default)]
     #[serde(deserialize_with = "interval_from_str")]
+    /// Interval to check health
     pub interval: Interval,
 }
 
-/// Assigned backend
+/// Upstream remote
 #[derive(Debug, Deserialize, Clone)]
 pub struct Remote {
+    /// Name of the upstream
     pub name: Option<String>,
+
+    /// URL of the upstream
     pub url: String,
-    pub health: Option<HealthCheck>,
+
+    /// Health check options
+    pub health: Option<HealthCheckConfig>,
 }
 
 #[derive(Debug, Deserialize)]
 /// Configuration
 pub struct Config {
+    /// remotes to check
     pub remotes: Vec<Remote>,
 }
 
