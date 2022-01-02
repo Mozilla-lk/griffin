@@ -1,5 +1,6 @@
 use griffin::app;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     app::run();
 }

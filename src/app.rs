@@ -5,7 +5,7 @@ use log::info;
 
 use crate::config::Config;
 
-use clokwerk::Scheduler;
+use clokwerk::{Interval, Scheduler};
 
 use std::thread;
 use std::time::Duration;
@@ -39,13 +39,13 @@ pub fn run() {
 
     // for now remote is only considering HTTP upstreams
     for remote in &config.remotes {
-        // for h in &remote.health {
-        //     let interval = h.interval;
-        //     let remote = remote.clone();
-        //     scheduler
-        //         .every(Interval::from(interval))
-        //         .run(move || println!("{:?}", remote));
-        // }
+        for h in &remote.health {
+            let interval = h.interval;
+            let remote = remote.clone();
+            scheduler
+                .every(Interval::from(interval))
+                .run(move || println!("{:?}", remote));
+        }
     }
 
     loop {
